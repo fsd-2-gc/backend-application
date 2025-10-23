@@ -11,14 +11,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 
 # Dependencies installeren
-COPY docker-tankalyze-api/web/requirements.txt .
+COPY docker-roosh-api/web/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Projectcode kopiëren
 COPY . .
 
 # Entrypoint
-RUN chmod +x docker-tankalyze-api/web/entrypoint.sh
-ENTRYPOINT ["docker-tankalyze-api/web/entrypoint.sh"]
+RUN chmod +x docker-roosh-api/web/entrypoint.sh
+ENTRYPOINT ["docker-roosh-api/web/entrypoint.sh"]
 
 EXPOSE 8000
