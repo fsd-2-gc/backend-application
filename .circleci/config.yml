@@ -17,6 +17,6 @@ jobs:
             python -m pip install --upgrade pip
             pip install -r docker-roosh-api/web/requirements.txt
       - run:
-          name: "Run tests"
+          name: "Run Unit-tests"
           command: |
             python manage.py test
