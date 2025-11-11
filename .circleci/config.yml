@@ -1,0 +1,22 @@
+version: 2.1
+
+jobs:
+  run-unit-test:
+    docker:
+      - image: python:3.12-slim
+    steps:
+      - checkout
+      - run:
+          name: "Install system dependencies"
+          command: |
+            apt-get update
+            apt-get install -y gcc build-essential default-libmysqlclient-dev pkg-config
+      - run:
+          name: "Install Python dependencies"
+          command: |
+            python -m pip install --upgrade pip
+            pip install -r docker-roosh-api/web/requirements.txt
+      - run:
+          name: "Run tests"
+          command: |
+            python manage.py test
