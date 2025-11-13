@@ -1,4 +1,4 @@
-# Roosh Backend Application
+# Roosh Backend Applicationn
 
 Quick start guide for running this Django REST API locally with Docker (recommended) or directly with Python.
 
