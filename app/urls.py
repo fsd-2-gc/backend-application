@@ -1,8 +1,10 @@
 from django.urls import path
 from core.views import health
+from core.views import getproducts
 
 urlpatterns = [
     path("v1/health/", health),
+    path("v1/getproducts/", getproducts),
 ]
 
 # JSON error handlers
