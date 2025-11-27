@@ -7,6 +7,14 @@ def seed_initial_data(apps, schema_editor):
     Reseller = apps.get_model('core', 'Reseller')
     Product = apps.get_model('core', 'Product')
 
+    # Only run this seeding in debug environments
+    import os
+    if str(os.environ.get('DEBUG', '')).strip() != '1':
+        # Skip seeding when DEBUG is not explicitly set to 1
+        # Using a simple print because logging may not be configured during migrations
+        print('Skipping initial seed: DEBUG env var is not 1')
+        return
+
     from decimal import Decimal
     import random
 
