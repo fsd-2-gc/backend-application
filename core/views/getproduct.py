@@ -7,7 +7,7 @@ def getproduct(request, product_id):
     try:
         product = Product.objects.filter(product_id=product_id).values(
             'product_id',
-            'company_id',
+            'reseller_id',
             'name',
             'type',
             'price_per_day',

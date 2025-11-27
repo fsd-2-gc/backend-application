@@ -4,7 +4,7 @@ from ..models import Product
 def getproducts(request):
     products = Product.objects.all().values(
         'product_id',
-        'company_id',
+        'reseller_id',
         'name',
         'type',
         'price_per_day',
