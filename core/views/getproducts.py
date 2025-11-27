@@ -29,6 +29,8 @@ def getproducts(request):
 
     return JsonResponse({
         "status": "ok",
-        "total": total,
-        "data": list(products)
+        "data": {
+            "total": total,
+            "items": list(products)
+        }
     }, status=200)
