@@ -16,7 +16,12 @@ class BookingRepository:
         return booking
     
     @staticmethod
-    def get_bookings():
-        bookings = Booking.objects.get(
-            #fill DAL logic
-        )
+    def get_bookings(email):
+        return Booking.objects.filter(customer_email = email)
+
+    @staticmethod
+    def get_booking(booking_id):
+        try:
+            return Booking.objects.get(booking_id = booking_id)
+        except Booking.DoesNotExist:
+            return None

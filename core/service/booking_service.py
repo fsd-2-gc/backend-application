@@ -7,5 +7,9 @@ class BookingService:
         return BookingRepository.create_booking(dto)
 
     @staticmethod
-    def get_bookings():
-        return BookingRepository.get_bookings()
+    def get_bookings(user_email):
+        return BookingRepository.get_bookings(user_email)
+    
+    @staticmethod
+    def get_booking(booking_id):
+        return BookingRepository.get_booking(booking_id)
