@@ -5,3 +5,7 @@ class BookingService:
     @staticmethod
     def create_booking(dto: BookingDTO):
         return BookingRepository.create_booking(dto)
+
+    @staticmethod
+    def get_bookings():
+        return BookingRepository.get_bookings()

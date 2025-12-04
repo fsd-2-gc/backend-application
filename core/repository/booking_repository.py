@@ -14,3 +14,9 @@ class BookingRepository:
             status=Status.Pending.value
         )
         return booking
+    
+    @staticmethod
+    def get_bookings():
+        bookings = Booking.objects.get(
+            #fill DAL logic
+        )
