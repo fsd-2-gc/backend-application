@@ -50,5 +50,6 @@ class BookingCreateView(View):
             'start_date': booking.start_date.isoformat(),
             'end_date': booking.end_date.isoformat(),
             'total_price': str(booking.total_price),
-            'status': booking.status
+            'status': booking.status,
+            'access_token': booking.access_token
         }, status=201)
