@@ -3,7 +3,7 @@ from core.views import health
 from core.views import getproducts
 from core.views import createproduct
 from core.views import getproduct
-from core.views.booking_view import BookingCreateView
+from core.views.createbooking import BookingCreateView
 
 
 urlpatterns = [

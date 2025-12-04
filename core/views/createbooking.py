@@ -28,8 +28,8 @@ class BookingCreateView(View):
                 product_id=int(data['product_id']),
                 customer_email=str(data['customer_email']),
                 reseller_id=int(data['reseller_id']),
-                start_date=datetime.fromisoformat(data['start_date']).date(),
-                end_date=datetime.fromisoformat(data['end_date']).date(),
+                start_date=datetime.fromisoformat(data['start_date']),
+                end_date=datetime.fromisoformat(data['end_date']),
                 total_price=Decimal(str(data['total_price']))
             )
         except Exception as e:
