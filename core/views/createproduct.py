@@ -10,8 +10,11 @@ def createproduct(request):
     try:
         data = json.loads(request.body)
 
+        # Support both old and new payload keys for backward compatibility
+        reseller_id = data.get("reseller_id")
+
         product = Product.objects.create(
-            company_id=data.get("company_id"),
+            reseller_id=reseller_id,
             name=data.get("name"),
             type=data.get("type"),
             price_per_day=data.get("price_per_day"),
