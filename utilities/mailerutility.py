@@ -1,89 +1,85 @@
 import logging
-import requests
 import os
 import sys
+import json
+import boto3
+from botocore.exceptions import ClientError
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-POSTMARK_ENDPOINT = "https://api.postmarkapp.com/email/withTemplate"
+
+def _get_ses_client():
+    """
+    Retrieves the SES client using explicit credentials from environment variables.
+    """
+    region = os.getenv("AWS_REGION")
+    aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
+    aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+
+    if not aws_access_key or not aws_secret_key:
+        logger.error("Missing AWS credentials in environment variables.")
+        return None
+
+    return boto3.client(
+        "ses",
+        region_name=region,
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key
+    )
+
+
+def _send_ses_email(to_email: str, template_name: str, template_data: dict, source_email: str) -> bool:
+    client = _get_ses_client()
+
+    try:
+        serialized_data = json.dumps(template_data)
+
+        response = client.send_templated_email(
+            Source=source_email,
+            Destination={
+                "ToAddresses": [to_email]
+            },
+            Template=template_name,
+            TemplateData=serialized_data
+        )
+
+        logger.info("SES email sent to %s. MessageId: %s", to_email, response.get("MessageId"))
+        return True
+
+    except ClientError as e:
+        logger.error("SES send failed to %s: %s", to_email, e.response['Error']['Message'])
+        return False
+    except Exception as e:
+        logger.exception("Unexpected error sending SES email: %s", e)
+        return False
 
 
 def send_confirmation_mail(to_email: str, template_model: dict) -> bool:
-    api_token = os.getenv("POSTMARK_API_TOKEN")
-    template_id = os.getenv("POSTMARK_BOOKING_CONFIRMATION_TEMPLATE_ID")
-    from_email = os.getenv("POSTMARK_FROM")
+    """
+    Sends booking confirmation via AWS SES.
+    Requires env: AWS_SES_SENDER, AWS_SES_CONFIRMATION_TEMPLATE
+    """
+    sender = os.getenv("AWS_SES_SENDER")
+    template_name = os.getenv("AWS_SES_CONFIRMATION_TEMPLATE")
 
-    if not all([api_token, template_id, from_email]):
-        logger.error("Configuratiefout: Een of meer environment variables ontbreken.")
+    if not all([sender, template_name]):
+        logger.error("Configuration error: AWS_SES_SENDER or AWS_SES_CONFIRMATION_TEMPLATE is missing.")
         return False
 
-    headers = {
-        "X-Postmark-Server-Token": api_token,
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-    }
-
-    payload = {
-        "From": from_email,
-        "To": to_email,
-        "TemplateId": int(template_id) if str(template_id).isdigit() else template_id,
-        "TemplateModel": template_model,
-    }
-
-    try:
-        resp = requests.post(POSTMARK_ENDPOINT, json=payload, headers=headers, timeout=10)
-
-        if 200 <= resp.status_code < 300:
-            logger.info("Postmark confirmation email sent to %s", to_email)
-            return True
-
-        logger.error("Postmark send failed (%s): %s", resp.status_code, resp.text)
-        return False
-    except Exception as e:
-        logger.exception("Postmark send exception: %s", e)
-        return False
+    return _send_ses_email(to_email, template_name, template_model, sender)
 
 
 def send_cancellation_mail(to_email: str, template_model: dict) -> bool:
     """
-    Send a cancellation email using Postmark's sendWithTemplate API.
-
-    Env vars required:
-      - POSTMARK_API_TOKEN
-      - POSTMARK_BOOKING_CANCELLATION_TEMPLATE_ID
-      - POSTMARK_FROM
-
-    Returns True on success, False otherwise. Errors are logged.
+    Sends cancellation email via AWS SES.
+    Requires env: AWS_SES_SENDER, AWS_SES_CANCELLATION_TEMPLATE
     """
-    api_token = os.getenv("POSTMARK_API_TOKEN")
-    template_id = os.getenv("POSTMARK_BOOKING_CANCELLATION_TEMPLATE_ID")
-    from_email = os.getenv("POSTMARK_FROM")
+    sender = os.getenv("AWS_SES_SENDER")
+    template_name = os.getenv("AWS_SES_CANCELLATION_TEMPLATE")
 
-    if not all([api_token, template_id, from_email]):
-        logger.error("Configuratiefout: Een of meer environment variables ontbreken voor cancellation mail.")
+    if not all([sender, template_name]):
+        logger.error("Configuration error: AWS_SES_SENDER or AWS_SES_CANCELLATION_TEMPLATE is missing.")
         return False
 
-    headers = {
-        "X-Postmark-Server-Token": api_token,
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-    }
-
-    payload = {
-        "From": from_email,
-        "To": to_email,
-        "TemplateId": int(template_id) if str(template_id).isdigit() else template_id,
-        "TemplateModel": template_model,
-    }
-
-    try:
-        resp = requests.post(POSTMARK_ENDPOINT, json=payload, headers=headers, timeout=10)
-        if 200 <= resp.status_code < 300:
-            logger.info("Postmark cancellation email sent to %s", to_email)
-            return True
-        logger.error("Postmark cancellation send failed (%s): %s", resp.status_code, resp.text)
-        return False
-    except Exception as e:
-        logger.exception("Postmark cancellation send exception: %s", e)
-        return False
+    return _send_ses_email(to_email, template_name, template_model, sender)
