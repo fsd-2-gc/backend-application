@@ -4,6 +4,8 @@ from datetime import datetime
 from decimal import Decimal
 from core.dto.booking_dto import BookingDTO
 from core.service.booking_service import BookingService
+from core.models import Product, Reseller
+from utilities.mailerutility import send_confirmation_mail
 
 service = BookingService()
 
@@ -28,6 +30,20 @@ def createbooking(request):
         )
 
         booking = service.create_booking(dto)
+
+        product = Product.objects.get(pk=booking.product_id)
+        reseller = Reseller.objects.filter(pk=booking.reseller_id).first()
+        reseller_name = reseller.name if reseller else ""
+        send_confirmation_mail(booking.customer_email, {
+            "subject": "Your booking is confirmed",
+            "email": booking.customer_email,
+            "booking_id": booking.booking_id,
+            "reseller_name": reseller_name,
+            "start_date": booking.start_date.strftime('%Y-%m-%d %H:%M'),
+            "end_date": booking.end_date.strftime('%Y-%m-%d %H:%M'),
+            "parking_type": getattr(product, 'type', ''),
+            "CURRENT_YEAR": datetime.now().year,
+        })
 
         return JsonResponse({
             "status": "ok",

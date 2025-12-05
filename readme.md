@@ -104,6 +104,21 @@ All configurable values live in `.env` and are read in `app/settings.py`.
 - API_KEY: Required to access endpoints (header `X-API-Key` or query `api_key`)
 - CORS_ALLOWED_ORIGINS: Comma‑separated list of origins. If not set, all origins are allowed.
 
+### Email (Postmark)
+To enable booking confirmation emails via Postmark, add the following variables to your `.env`:
+
+```
+# Postmark
+POSTMARK_API_TOKEN=your-postmark-server-token
+POSTMARK_TEMPLATE_ID=1234567            # numeric template ID or alias
+POSTMARK_FROM=no-reply@your-domain.tld  # verified sender in Postmark
+```
+
+Behavior:
+- After a booking is successfully created (`POST /v1/createbooking/`), the server posts to Postmark's `email/withTemplate` endpoint using the configured template ID.
+- The `TemplateModel` includes: `subject`, `email`, `booking_id`, `reseller_name`, `start_date`, `end_date`, `parking_type`, `CURRENT_YEAR`.
+- Email send failures are logged but do not affect the booking API response.
+
 ## Useful commands
 - Start/stop Docker: `docker compose -f docker-roosh-api/docker-compose.yml up -d` / `down`
 - Tail logs: `docker compose -f docker-roosh-api/docker-compose.yml logs -f web`
