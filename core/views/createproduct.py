@@ -5,7 +5,10 @@ from core.models import Product
 
 def createproduct(request):
     if request.method != "POST":
-        return JsonResponse({"error": "POST request required"}, status=400)
+        return JsonResponse({
+            "status": "error",
+            "data": "POST request required"
+        }, status=400)
 
     try:
         data = json.loads(request.body)
@@ -22,9 +25,14 @@ def createproduct(request):
         )
 
         return JsonResponse({
-            "status": "created",
-            "product_id": product.product_id
+            "status": "ok",
+            "data": {
+                "product_id": product.product_id
+            }
         }, status=201)
 
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
+        return JsonResponse({
+            "status": "error",
+            "data": str(e)
+        }, status=400)
