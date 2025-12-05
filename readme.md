@@ -124,6 +124,32 @@ Behavior:
 - Tail logs: `docker compose -f docker-roosh-api/docker-compose.yml logs -f web`
 - Run manage.py inside container: `docker compose -f docker-roosh-api/docker-compose.yml exec web python manage.py <cmd>`
 
+## API reference
+
+### Cancel booking (soft delete)
+- Method: `POST`
+- Path: `/v1/cancelbooking/<booking_id>/`
+- Description: Sets the booking's `status` to `2` (Cancelled) without deleting the record.
+- Response 200 OK:
+```
+{
+  "status": "ok",
+  "data": {
+    "booking_id": 123,
+    "status": 2
+  }
+}
+```
+- Response 404 when booking not found:
+```
+{
+  "status": "error",
+  "data": "Booking not found"
+}
+```
+- Notes:
+  - The operation is idempotent. Calling it multiple times on the same booking will keep status `2`.
+
 ## Troubleshooting
 - Database not ready: the `web` service waits for the `database` healthcheck. Give it a moment or check logs: `docker compose -f docker-roosh-api/docker-compose.yml logs -f database`.
 - Access denied: ensure your requests include the correct `X-API-Key` header.
