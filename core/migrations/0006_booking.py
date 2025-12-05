@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0001_initial'),
+        ('core', '0005_seed_initial_data'),
     ]
 
     operations = [
@@ -17,10 +17,11 @@ class Migration(migrations.Migration):
                 ('product_id', models.IntegerField()),
                 ('customer_email', models.CharField(max_length=100)),
                 ('reseller_id', models.IntegerField()),
-                ('start_date', models.DateField()),
-                ('end_date', models.DateField()),
+                ('start_date', models.DateTimeField()),
+                ('end_date', models.DateTimeField()),
                 ('total_price', models.DecimalField(decimal_places=2, max_digits=10)),
                 ('status', models.IntegerField(choices=[(0, 'Pending'), (1, 'Confirmed'), (2, 'Cancelled'), (3, 'Refunded')], default=0)),
+                ('access_token', models.CharField(editable=False, max_length=128, unique=True))
             ],
         ),
     ]
