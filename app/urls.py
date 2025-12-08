@@ -4,7 +4,7 @@ from core.views import getproducts
 from core.views import createproduct
 from core.views import getproduct
 from core.views.booking_view import BookingCreateView
-
+from core.views.getbooking import GetBooking
 
 urlpatterns = [
     path("v1/health/", health),
@@ -12,6 +12,7 @@ urlpatterns = [
     path("v1/createproduct/", createproduct),
     path("v1/getproduct/<int:product_id>/", getproduct),
     path("v1/createbooking/", BookingCreateView.as_view()),
+    path('booking/<int:booking_id>/', GetBooking.as_view(), name='get_booking'),
 ]
 
 # JSON error handlers

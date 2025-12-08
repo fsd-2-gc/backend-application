@@ -11,11 +11,8 @@ from core.service.booking_service import BookingService
 service = BookingService()
 
 @method_decorator(csrf_exempt, name='dispatch')
-class getbookings(View):
-    def get(self, request):
-        if not booking_id:
-            return JsonResponse({'error': 'booking_id parameter is required'}, status=400)
-
+class GetBooking(View):
+    def get(self, request, booking_id):
         try:
             booking = BookingService.get_booking(booking_id)
             if not booking:
@@ -37,6 +34,3 @@ class getbookings(View):
         }
 
         return JsonResponse(response, status=200)
-
-
-
