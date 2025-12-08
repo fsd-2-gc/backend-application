@@ -1,16 +1,11 @@
 from django.http import JsonResponse
 import json
-from datetime import datetime
-from decimal import Decimal
-from core.dto.booking_dto import BookingDTO
 from core.service.booking_service import BookingService
-from core.models import Product, Reseller
-from utilities.mailerutility import send_confirmation_mail
 
 service = BookingService()
 
 
-def getbookings(request, customer_email):
+def getbookings(request, customer_email: str):
     if request.method != "GET":
         return JsonResponse({
             "status": "error",

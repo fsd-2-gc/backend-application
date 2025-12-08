@@ -16,6 +16,7 @@ urlpatterns = [
     path("v1/createbooking/", createbooking),
     path("v1/cancelbooking/<int:booking_id>/", cancelbooking),
     path("v1/getbookings/<str:customer_email>/", getbookings),
+    path("v1/getbookings/<int:booking_id>/", getbookings),
 ]
 
 # JSON error handlers

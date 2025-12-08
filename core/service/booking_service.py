@@ -11,5 +11,9 @@ class BookingService:
         return BookingRepository.get_bookings(email)
 
     @staticmethod
+    def get_booking(booking_id: int):
+        return BookingRepository.get_booking(booking_id)
+
+    @staticmethod
     def cancel_booking(booking_id: int):
         return BookingRepository.cancel_booking(booking_id)
