@@ -5,7 +5,7 @@ from core.service.booking_service import BookingService
 service = BookingService()
 
 
-def getbookings(request, booking_id: int):
+def getbooking(request, booking_id: int):
     if request.method != "GET":
         return JsonResponse({
             "status": "error",
@@ -19,7 +19,7 @@ def getbookings(request, booking_id: int):
                 "data": "booking_id query parameter is required"
             }, status=400)
 
-        booking = service.get_booking(booking_id)
+        booking = service.get_booking(int(booking_id))
 
         response = ({
             "booking_id": booking.booking_id,

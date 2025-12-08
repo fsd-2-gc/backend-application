@@ -25,7 +25,7 @@ class BookingRepository:
     @staticmethod
     def get_booking(booking_id:int):
         try:
-            return Booking.objects.get(id=booking_id)
+            return Booking.objects.get(booking_id=booking_id)
         except Booking.DoesNotExist:
             raise ValueError("Booking not found")
 
