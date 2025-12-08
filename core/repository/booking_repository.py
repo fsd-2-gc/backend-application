@@ -14,3 +14,17 @@ class BookingRepository:
             status=Status.Pending.value
         )
         return booking
+
+    @staticmethod
+    def cancel_booking(booking_id: int) -> Booking:
+        try:
+            booking = Booking.objects.get(pk=booking_id)
+        except Booking.DoesNotExist:
+            raise ValueError("Booking not found")
+
+        if booking.status == Status.Cancelled.value:
+            return booking
+
+        booking.status = Status.Cancelled.value
+        booking.save()
+        return booking

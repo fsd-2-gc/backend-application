@@ -104,10 +104,56 @@ All configurable values live in `.env` and are read in `app/settings.py`.
 - API_KEY: Required to access endpoints (header `X-API-Key` or query `api_key`)
 - CORS_ALLOWED_ORIGINS: Comma‑separated list of origins. If not set, all origins are allowed.
 
+### Email (Postmark)
+To enable booking emails via Postmark, add the following variables to your `.env`:
+
+```
+# Postmark
+POSTMARK_API_TOKEN=your-postmark-server-token
+POSTMARK_FROM=no-reply@your-domain.tld  # verified sender in Postmark
+
+# Templates:
+POSTMARK_BOOKING_CONFIRMATION_TEMPLATE_ID=1234567   # numeric template ID or alias for confirmation
+POSTMARK_BOOKING_CANCELLATION_TEMPLATE_ID=2345678   # numeric template ID or alias for cancellation
+```
+
+Behavior:
+- After a booking is successfully created (`POST /v1/createbooking/`), the server posts to Postmark's `email/withTemplate` endpoint using `POSTMARK_BOOKING_CONFIRMATION_TEMPLATE_ID`.
+- The confirmation `TemplateModel` includes: `subject`, `email`, `booking_id`, `reseller_name`, `start_date`, `end_date`, `parking_type`, `CURRENT_YEAR`.
+- After a booking is cancelled (`POST /v1/cancelbooking/<booking_id>/`), the server posts a cancellation email using `POSTMARK_BOOKING_CANCELLATION_TEMPLATE_ID`.
+- The cancellation `TemplateModel` includes: `subject`, `customer_email`, `booking_id`, `reseller_name`, `CURRENT_YEAR`.
+- Email send failures are logged but do not affect the API responses.
+
 ## Useful commands
 - Start/stop Docker: `docker compose -f docker-roosh-api/docker-compose.yml up -d` / `down`
 - Tail logs: `docker compose -f docker-roosh-api/docker-compose.yml logs -f web`
 - Run manage.py inside container: `docker compose -f docker-roosh-api/docker-compose.yml exec web python manage.py <cmd>`
+
+## API reference
+
+### Cancel booking (soft delete)
+- Method: `POST`
+- Path: `/v1/cancelbooking/<booking_id>/`
+- Description: Sets the booking's `status` to `2` (Cancelled) without deleting the record.
+- Response 200 OK:
+```
+{
+  "status": "ok",
+  "data": {
+    "booking_id": 123,
+    "status": 2
+  }
+}
+```
+- Response 404 when booking not found:
+```
+{
+  "status": "error",
+  "data": "Booking not found"
+}
+```
+- Notes:
+  - The operation is idempotent. Calling it multiple times on the same booking will keep status `2`.
 
 ## Troubleshooting
 - Database not ready: the `web` service waits for the `database` healthcheck. Give it a moment or check logs: `docker compose -f docker-roosh-api/docker-compose.yml logs -f database`.

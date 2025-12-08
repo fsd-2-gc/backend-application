@@ -15,7 +15,10 @@ def getproduct(request, product_id):
         ).first()
 
         if not product:
-            return JsonResponse({"status": "error", "message": "Product not found"}, status=404)
+            return JsonResponse({
+                "status": "error",
+                "data": "Product not found"
+            }, status=404)
 
         return JsonResponse({
             "status": "ok",
@@ -23,4 +26,7 @@ def getproduct(request, product_id):
         })
 
     except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        return JsonResponse({
+            "status": "error",
+            "data": str(e)
+        }, status=500)
