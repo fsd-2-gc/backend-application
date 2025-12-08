@@ -1,4 +1,3 @@
-venv/
 .venv/
 __pycache__/
 *.pyc
@@ -8,5 +7,6 @@ db.sqlite3
 .env.prod
 /.sonar/
 
+venv/
 .env.bak
 .idea/
