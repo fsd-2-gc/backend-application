@@ -16,6 +16,13 @@ class BookingRepository:
         return booking
 
     @staticmethod
+    def get_bookings(email: str):
+        try:
+            return Booking.objects.filter(customer_email = email)
+        except Booking.DoesNotExist:
+            raise ValueError("Bookings not found")
+
+    @staticmethod
     def cancel_booking(booking_id: int) -> Booking:
         try:
             booking = Booking.objects.get(pk=booking_id)

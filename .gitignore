@@ -6,3 +6,6 @@ db.sqlite3
 .env.dev
 .env.prod
 /.sonar/
+
+.env.bak
+.idea/
