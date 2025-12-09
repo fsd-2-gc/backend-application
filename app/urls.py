@@ -1,10 +1,11 @@
 from django.urls import path
-from core.views import health
+from core.views import health, getbooking
 from core.views import getproducts
 from core.views import createproduct
 from core.views import getproduct
 from core.views import createbooking
 from core.views import cancelbooking
+from core.views import getbookings
 
 
 urlpatterns = [
@@ -14,6 +15,8 @@ urlpatterns = [
     path("v1/getproduct/<int:product_id>/", getproduct),
     path("v1/createbooking/", createbooking),
     path("v1/cancelbooking/<int:booking_id>/", cancelbooking),
+    path("v1/getbookings/<str:customer_email>/", getbookings),
+    path("v1/getbooking/<int:booking_id>/", getbooking),
 ]
 
 # JSON error handlers

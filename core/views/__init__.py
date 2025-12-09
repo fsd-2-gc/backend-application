@@ -6,3 +6,5 @@ from .getproduct import getproduct
 from .errors import error_400, error_404, error_500
 from .createbooking import createbooking
 from .cancelbooking import cancelbooking
+from .getbookings import getbookings
+from .getbooking import getbooking
