@@ -21,6 +21,22 @@ jobs:
           command: |
             python manage.py test
 
+  run-static-code-analysis:
+    docker:
+      - image: python:3.12-slim
+    steps:
+      - checkout
+      - run:
+          name: "Install PySonar"
+          command: pip install pysonar
+      - run:
+          name: "Run PySonar"
+          command: |
+            pysonar \
+            --sonar-token=$SONAR_DEV_TOKEN \
+            --sonar-project-key=$SONAR_DEV_PROJECT_KEY \
+            --sonar-organization=$SONAR_DEV_ORGANIZATION
+
   deploy-to-vps-prod:
     docker:
       - image: python:3.12-slim
@@ -61,6 +77,13 @@ workflows:
   build-and-deploy-prod:
     jobs:
       - run-unit-test:
+          filters:
+            branches:
+              only:
+                - main
+      - run-static-code-analysis:
+          requires:
+            - run-unit-test
           filters:
             branches:
               only:
