@@ -4,5 +4,6 @@ mysqlclient==2.2.7
 python-dotenv
 gunicorn
 requests
+pysonar
 boto3
 botocore
