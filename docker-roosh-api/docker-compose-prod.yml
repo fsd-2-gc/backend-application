@@ -1,0 +1,20 @@
+services:
+  roosh-fsd-02-gc-api-prod:
+    build:
+      context: ..
+      dockerfile: docker-roosh-api/web/Dockerfile
+    env_file: ../.env
+    volumes:
+      - ..:/app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.roosh_fsd_02_gc_api_prod.rule=Host(`api.roosh-fsd-02-gc.nl`)"
+      - "traefik.http.routers.roosh_fsd_02_gc_api_prod.entrypoints=websecure"
+      - "traefik.http.routers.roosh_fsd_02_gc_api_prod.tls.certresolver=cloudflare"
+      - "traefik.http.services.roosh_fsd_02_gc_api_prod.loadbalancer.server.port=8000"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true

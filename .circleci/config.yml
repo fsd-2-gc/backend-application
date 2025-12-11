@@ -1,0 +1,82 @@
+version: 2.1
+
+jobs:
+  run-unit-test:
+    docker:
+      - image: python:3.12-slim
+    steps:
+      - checkout
+      - run:
+          name: "Install system dependencies"
+          command: |
+            apt-get update
+            apt-get install -y gcc build-essential default-libmysqlclient-dev pkg-config
+      - run:
+          name: "Install Python dependencies"
+          command: |
+            python -m pip install --upgrade pip
+            pip install -r docker-roosh-api/web/requirements.txt
+      - run:
+          name: "Run tests"
+          command: |
+            python manage.py test
+
+  deploy-to-vps-prod:
+    docker:
+      - image: python:3.12-slim
+    steps:
+      - checkout
+      - run:
+          name: "Create env file"
+          command: echo "$BASE64_ENV_PROD" | base64 --decode > .env
+      - run:
+          name: "Install OpenSSH client and rsync"
+          command: apt-get update && apt-get install -y openssh-client rsync
+      - add_ssh_keys
+      - run:
+          name: "Upload files using rsync"
+          command: |
+            rsync -azv --delete \
+              -e "ssh -o StrictHostKeyChecking=no" \
+              --exclude='.git' \
+              --exclude='.venv' \
+              --exclude='venv' \
+              --exclude='.circleci' \
+              --exclude='__pycache__' \
+              --exclude='*.pyc' \
+              ./ $VPS_USER@$VPS_HOST:$PROD_PROJECT_DIR/
+      - run:
+          name: "Deploy and migrate on VPS via SSH"
+          command: |
+            ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST "
+              set -euo pipefail
+              cd $PROD_PROJECT_DIR/docker-roosh-api
+              docker compose -f docker-compose-prod.yml down || true
+              docker compose -f docker-compose-prod.yml up -d --build
+              docker compose -f docker-compose-prod.yml exec -T roosh-fsd-02-gc-api-prod python manage.py migrate --noinput
+            "
+
+workflows:
+  version: 2
+  build-and-deploy-prod:
+    jobs:
+      - run-unit-test:
+          filters:
+            branches:
+              only:
+                - main
+      - hold-prod:
+          type: approval
+          requires:
+            - run-unit-test
+          filters:
+            branches:
+              only:
+                - main
+      - deploy-to-vps-prod:
+          requires:
+            - hold-prod
+          filters:
+            branches:
+              only:
+                - main

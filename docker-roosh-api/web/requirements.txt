@@ -1,0 +1,8 @@
+Django>=5.0
+djangorestframework
+mysqlclient==2.2.7
+python-dotenv
+gunicorn
+requests
+boto3
+botocore
