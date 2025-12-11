@@ -74,6 +74,20 @@ jobs:
 
 workflows:
   version: 2
+  build-and-test-dev:
+    jobs:
+      - run-unit-test:
+          filters:
+            branches:
+              only:
+                - develop
+      - run-static-code-analysis:
+          requires:
+            - run-unit-test
+          filters:
+            branches:
+              only:
+                - develop
   build-and-deploy-prod:
     jobs:
       - run-unit-test:
