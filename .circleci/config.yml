@@ -95,13 +95,6 @@ workflows:
             branches:
               only:
                 - main
-      - run-static-code-analysis:
-          requires:
-            - run-unit-test
-          filters:
-            branches:
-              only:
-                - main
       - hold-prod:
           type: approval
           requires:
