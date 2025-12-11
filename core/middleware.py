@@ -24,8 +24,10 @@ class SimpleCorsMiddleware:
     def _get_allow_origin(self, origin: str | None):
         if not origin:
             return None
-        if self.allowed_origins is None:
+
+        if self.allowed_origins is None or "*" in self.allowed_origins:
             return "*"
+
         return origin if origin in self.allowed_origins else None
 
     def __call__(self, request):
