@@ -8,3 +8,4 @@ from .createbooking import createbooking
 from .cancelbooking import cancelbooking
 from .getbookings import getbookings
 from .getbooking import getbooking
+from .updatebooking import updatebooking

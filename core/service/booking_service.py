@@ -17,3 +17,7 @@ class BookingService:
     @staticmethod
     def cancel_booking(booking_id: int):
         return BookingRepository.cancel_booking(booking_id)
+
+    @staticmethod
+    def update_booking(booking_id: int, dto: BookingDTO):
+        return BookingRepository.update_booking(booking_id, dto)

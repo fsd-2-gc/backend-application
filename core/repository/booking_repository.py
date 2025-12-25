@@ -42,3 +42,18 @@ class BookingRepository:
         booking.status = Status.Cancelled.value
         booking.save()
         return booking
+
+    @staticmethod
+    def update_booking(booking_id: int, dto: BookingDTO):
+        booking = Booking.objects.get(pk=booking_id)
+
+        booking.product_id = dto.product_id
+        booking.customer_email = dto.customer_email
+        booking.reseller_id = dto.reseller_id
+        booking.start_date = dto.start_date
+        booking.end_date = dto.end_date
+        booking.total_price = dto.total_price
+
+        booking.save()
+        return booking
+
